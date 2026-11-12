@@ -4,9 +4,6 @@
 .env
 .env.*
 
-# Archivo de claves
-/claves infinityfree.txt
-
 # Dependencias
 /vendor/
 /node_modules/
