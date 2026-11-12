@@ -1,0 +1,21 @@
+
+# Credenciales privadas
+/includes/.env.php
+.env
+.env.*
+
+# Archivo de claves
+/claves infinityfree.txt
+
+# Dependencias
+/vendor/
+/node_modules/
+
+# Archivos temporales
+*.log
+.DS_Store
+Thumbs.db
+
+# Configuración del editor
+.vscode/
+.idea/
