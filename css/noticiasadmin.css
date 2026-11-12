@@ -1,0 +1,239 @@
+/* =========================
+   RESET
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f4f8fb;
+    color: #1d2b36;
+    line-height: 1.6;
+}
+
+/* CONTENEDOR */
+.admin-container {
+    width: 92%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 50px 0 80px;
+}
+
+/* HEADER */
+.admin-header {
+    background: linear-gradient(rgba(8, 38, 66, 0.85), rgba(8, 38, 66, 0.85));
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+    padding: 70px 50px;
+    color: white;
+    margin-bottom: 45px;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.10);
+}
+.admin-header h1 {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+.admin-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* TITULOS */
+h2 {
+    color: #0d3556;
+    margin-bottom: 25px;
+    margin-top: 45px;
+    font-size: 1.8rem;
+}
+
+/* TARJETAS */
+.admin-card, .noticia-card {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    margin-bottom: 35px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.06);
+}
+
+/* FORMULARIOS */
+.cms-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ADMIN CARD */
+.admin-card {padding: 35px;}
+
+/* INPUTS */
+.cms-form input, .cms-form textarea {
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid #dbe5ec;
+    background: #f8fbfd;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.cms-form input:focus, .cms-form textarea:focus {
+    border-color: #00a3c8;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0,163,200,0.15);
+}
+
+/* TEXTAREA */
+.cms-form textarea {
+    min-height: 180px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* FILE INPUT */
+input[type="file"] {background: white;}
+
+/* BOTONES */
+button, .btn-actualizar {
+    border: none;
+    padding: 16px 22px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+button {background: #00a3c8;}
+button:hover {
+    background: #008fb0;
+    transform: translateY(-2px);
+}
+.btn-actualizar {background: #0d3556;}
+.btn-actualizar:hover {
+    background: #08253d;
+    transform: translateY(-2px);
+}
+
+/* NOTICIA */
+.noticia-card {transition: all 0.3s ease;}
+.noticia-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(0,0,0,0.10);
+}
+
+/* IMAGEN */
+.noticia-img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    display: block;
+}
+
+/* CONTENIDO */
+.noticia-content {padding: 35px;}
+
+/* TITULO */
+.noticia-content h3 {
+    color: #0d3556;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* FECHA */
+.fecha-publicacion {
+    display: inline-block;
+    background: rgba(0,163,200,0.10);
+    color: #008fb0;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+/* TEXTO */
+.noticia-texto {
+    color: #5a6975;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+/* ELIMINAR */
+.eliminar-btn {
+    display: inline-block;
+    margin-top: 20px;
+    background: #ff5a5a;
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.eliminar-btn:hover {
+    background: #df4040;
+    transform: translateY(-2px);
+}
+
+/* MENSAJES */
+.mensaje-ok {
+    background: #dcfce7;
+    color: #166534;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+}
+.mensaje-error {
+    background: #ffe4e4;
+    color: #b42323;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+}
+
+/* HR */
+hr {
+    border: none;
+    height: 1px;
+    background: #dbe5ec;
+    margin: 50px 0;
+}
+
+/* FOOTER */
+footer {
+    background: #0d3556;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+}
+footer h3 {
+    margin: 20px 0;
+    font-size: 1.3rem;
+}
+
+/* ICONOS REDES */
+footer p {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+footer img {
+    width: 38px;
+    transition: transform 0.3s ease;
+}
+footer img:hover {transform: scale(1.15);}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .admin-header {padding: 50px 30px;}
+    .admin-header h1 {font-size: 2.2rem;}
+    .admin-card, .noticia-content {padding: 25px;}
+    .noticia-img {height: 220px;}
+    .noticia-content h3 {font-size: 1.5rem;}
+}

@@ -1,0 +1,245 @@
+/* =========================
+   RESET
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY*/
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f4f8fb;
+    color: #1d2b36;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CONTENEDOR PRINCIPAL */
+
+.citas-container {
+    width: 92%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 50px 0 80px;
+    flex: 1;
+}
+
+/*  HERO */
+
+.citas-hero {
+    background: linear-gradient(rgba(8, 38, 66, 0.82), rgba(8, 38, 66, 0.82));
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+    padding: 70px 50px;
+    color: white;
+    margin-bottom: 45px;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.10);
+}
+.citas-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+.citas-hero p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+/* TITULOS */
+h2 {
+    color: #0d3556;
+    margin-bottom: 25px;
+    margin-top: 35px;
+    font-size: 1.8rem;
+}
+
+/* TARJETAS */
+.citas-card, .cita-card {
+    background: white;
+    border-radius: 28px;
+    padding: 35px;
+    margin-bottom: 35px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.06);
+}
+
+/* CARD CITA */
+.cita-card {
+    border-left: 6px solid #00a3c8;
+    transition: all 0.3s ease;
+}
+.cita-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+/* FORMULARIOS */
+.citas-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+/* INPUTS */
+.citas-form input {
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid #dbe5ec;
+    background: #f8fbfd;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.citas-form input:focus {
+    border-color: #00a3c8;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0,163,200,0.15);
+}
+
+/* BOTONES */
+.citas-btn {
+    border: none;
+    background: #00a3c8;
+    color: white;
+    padding: 15px 22px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.citas-btn:hover {
+    background: #008fb0;
+    transform: translateY(-2px);
+}
+
+/* BOTON EDITAR */
+.btn-editar {background: #0d3556;}
+.btn-editar:hover {background: #08253d;}
+
+/* BOTON ELIMINAR */
+.btn-eliminar {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    background: #ff5a5a;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-eliminar:hover {
+    background: #df4040;
+    transform: translateY(-2px);
+}
+
+/* FECHA */
+.fecha-cita {
+    display: inline-block;
+    background: rgba(0,163,200,0.10);
+    color: #008fb0;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+/* MOTIVO */
+.motivo-cita {
+    background: #f8fbfd;
+    padding: 18px;
+    border-radius: 16px;
+    margin: 20px 0;
+    border: 1px solid #e4edf3;
+}
+
+.motivo-cita strong {color: #0d3556;}
+.motivo-cita p {
+    margin-top: 8px;
+    color: #51606d;
+}
+
+/* CITA REALIZADA */
+.cita-realizada {
+    margin-top: 20px;
+    display: inline-block;
+    background: #eef2f5;
+    color: #6a7680;
+    padding: 10px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+}
+
+/* MENSAJES */
+.mensaje-ok {
+    background: #dcfce7;
+    color: #166534;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+}
+.mensaje-error {
+    background: #ffe4e4;
+    color: #b42323;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+}
+
+/* SIN CITAS */
+.sin-citas {
+    background: white;
+    padding: 30px;
+    border-radius: 24px;
+    text-align: center;
+    color: #5d6b78;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.05);
+}
+
+/* HR */
+hr {
+    border: none;
+    height: 1px;
+    background: #dbe5ec;
+    margin: 50px 0;
+}
+
+/* FOOTER */
+footer {
+    background: #0d3556;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+    margin-top: auto;
+}
+footer h3 {
+    margin: 20px 0;
+    font-size: 1.2rem;
+}
+.redes-sociales {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+footer img {
+    width: 38px;
+    transition: transform 0.3s ease;
+}
+footer img:hover {transform: scale(1.12);}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .citas-hero {padding: 50px 30px;}
+    .citas-hero h1 {font-size: 2.2rem;}
+    .citas-card, .cita-card {padding: 25px;}
+    .citas-form {grid-template-columns: 1fr;}
+    h2 {font-size: 1.5rem;}
+}

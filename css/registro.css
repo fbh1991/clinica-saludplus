@@ -1,0 +1,166 @@
+/* =========================
+   RESET GENERAL
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY */
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(rgba(7, 32, 54, 0.78), rgba(7, 32, 54, 0.78));
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CONTENIDO PRINCIPAL */
+.main-content {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+}
+
+/* CONTENEDOR FORMULARIO */
+.container {
+    width: 100%;
+    max-width: 850px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 30px;
+    padding: 55px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.25);
+    backdrop-filter: blur(10px);
+    animation: aparecer 0.8s ease;
+}
+
+/* TITULOS */
+.tituloRegistro {
+    color: #0d3556;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.subtituloRegistro {
+    color: #6a7884;
+    text-align: center;
+    margin-bottom: 35px;
+    font-size: 1rem;
+}
+
+/* MENSAJE ERROR */
+.error {
+    background: rgba(255, 77, 77, 0.12);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #d62828;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* FORMULARIO */
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+/* INPUTS Y SELECT */
+input, select {
+    width: 100%;
+    padding: 17px 18px;
+    border-radius: 14px;
+    border: 1px solid #d9e4ec;
+    background: #f8fbfd;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* FOCUS INPUTS */
+input:focus, select:focus {
+    border-color: #00a3c8;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0,163,200,0.15);
+}
+
+/* PLACEHOLDERS */
+input::placeholder { color: #8d9aa5;}
+
+/* SELECT */
+select {
+    color: #5d6b78;
+    cursor: pointer;
+}
+
+/* BOTON */
+button {
+    grid-column: span 2;
+    margin-top: 10px;
+    border: none;
+    background: #00a3c8;
+    color: white;
+    padding: 18px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+button:hover {
+    background: #008fb0;
+    transform: translateY(-3px);
+}
+
+/* FOOTER */
+footer {
+    width: 100%;
+    background: rgba(7, 32, 54, 0.96);
+    text-align: center;
+    padding: 45px 20px;
+}
+footer h3 {
+    margin: 20px 0;
+    font-size: 1.2rem;
+}
+.redes-sociales {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+footer img {
+    width: 38px;
+    transition: transform 0.3s ease;
+}
+footer img:hover {transform: scale(1.12);}
+
+/* ANIMACION */
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .container {padding: 35px 25px;}
+    form {grid-template-columns: 1fr;}
+    button {grid-column: span 1;}
+    .tituloRegistro {font-size: 2rem;}
+}

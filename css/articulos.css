@@ -1,0 +1,94 @@
+/* =========================
+   ARTICULOS MEDICOS
+========================= */
+
+article {padding: 80px 0;}
+
+/* TITULO SUPERIOR */
+article > div:first-child {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+article > div:first-child p {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #0d3556;
+    position: relative;
+    display: inline-block;
+}
+
+/* LINEA DECORATIVA */
+article > div:first-child p::after {
+    content: "";
+    width: 70px;
+    height: 4px;
+    background: #00a3c8;
+    border-radius: 20px;
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* CONTENEDOR*/
+article .container {
+    width: 92%;
+    max-width: 1400px;
+}
+
+/* CARD */
+article .card {
+    border: none;
+    border-radius: 24px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    transition: all 0.35s ease;
+}
+
+/* HOVER */
+article .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.10);
+}
+
+/* IMAGEN */
+article .card img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+/* ZOOM HOVER */
+
+article .card:hover img {transform: scale(1.05);}
+
+/* BODY */
+
+article .card-body {padding: 28px;}
+
+/* TEXTO */
+
+article .card-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #274255;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 992px) {
+    article .card img {height: 210px;}
+}
+
+@media (max-width: 768px) {
+    article {padding: 50px 0;}
+
+    article > div:first-child p {font-size: 1.8rem;}
+
+    article .card img {height: 200px;}
+}

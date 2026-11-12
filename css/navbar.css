@@ -1,0 +1,172 @@
+/* =========================
+   RESET
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* HEADER */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    height: 85px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+}
+
+/* NAVBAR */
+.navbar {
+    width: 92%;
+    max-width: 1400px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 85px;
+}
+
+/* LOGO */
+.logo, .nav-links {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.logo a {
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d3556;
+    transition: all 0.3s ease;
+}
+.logo span {color: #00a3c8;}
+.logo a:hover {opacity: 0.85;}
+
+/* LINKS */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    list-style: none;
+}
+.nav-links a {
+    text-decoration: none;
+    color: #274255;
+    font-weight: 500;
+    padding: 12px 18px;
+    border-radius: 40px;
+    transition: all 0.3s ease;
+}
+
+/* HOVER*/
+.nav-links a:hover {
+    background: rgba(0,163,200,0.10);
+    color: #00a3c8;
+}
+
+/* BOTON REGISTRO */
+.btn-nav {
+    background: #00a3c8;
+    color: white !important;
+    box-shadow: 0 8px 20px rgba(0,163,200,0.20);
+}
+.btn-nav:hover {
+    background: #008fb0 !important;
+    color: white !important;
+    transform: translateY(-2px);
+}
+
+/* LOGOUT */
+.btn-logout {
+    background: #ff5a5a;
+    color: white !important;
+}
+.btn-logout:hover {
+    background: #df4040 !important;
+    color: white !important;
+    transform: translateY(-2px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+@media (max-width: 600px) {
+    .logo a {font-size: 1.6rem;}
+    .nav-links {gap: 10px;}
+    .nav-links a {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+    }
+}
+
+/* HAMBURGUESA */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    gap: 6px;
+    z-index: 1001;
+}
+.hamburger span {
+    width: 28px;
+    height: 3px;
+    background: #0d3556;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+/* ANIMACION X */
+.hamburger.active span:nth-child(1) {transform: rotate(45deg) translate(7px, 6px);}
+.hamburger.active span:nth-child(2) {opacity: 0;}
+.hamburger.active span:nth-child(3) {transform: rotate(-45deg) translate(7px, -6px);}
+
+/* RESPONSIVE MENU */
+@media (max-width: 900px) {
+    .navbar {flex-direction: row;}
+    .hamburger {display: flex;}
+    .nav-links {
+        position: fixed;
+        top: 88px;
+        right: -100%;
+        width: 320px;
+        height: calc(100vh - 88px);
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(14px);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 40px 30px;
+        gap: 18px;
+        transition: right 0.4s ease;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.08);
+    }
+    .nav-links.active {right: 0;}
+    .nav-links li {width: 100%;}
+    .nav-links a {
+        display: block;
+        width: 100%;
+        padding: 16px 20px;
+        border-radius: 14px;
+        font-size: 1rem;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 500px) {
+    .nav-links {width: 100%;}
+}

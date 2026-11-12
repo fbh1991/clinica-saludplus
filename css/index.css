@@ -1,0 +1,228 @@
+/* =========================
+   RESET GENERAL
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* SCROLL SUAVE */
+html {scroll-behavior: smooth;}
+
+/* BODY */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f8fb;
+    color: #1d2b36;
+    line-height: 1.6;
+}
+
+/* EVITA DESBORDAMIENTO DE IMAGENES */
+img {max-width: 100%;}
+
+/* BANNER */
+.banner-content {
+
+    /* ALTURA MINIMA PARA MEJOR RESPONSIVE */
+    min-height: 90vh;
+    background:
+        linear-gradient(
+            rgba(8, 38, 66, 0.55),
+            rgba(8, 38, 66, 0.55)
+        ),
+        url("../images/images_index/bannerclinica.jpg");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    color: white;
+}
+.banner-content h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+.banner-content p {
+    font-size: 1.3rem;
+    margin-bottom: 35px;
+    max-width: 700px;
+}
+
+/* BOTON BANNER */
+.btn-banner {
+    background-color: #00a3c8;
+    color: white;
+    padding: 16px 38px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-banner:hover {
+    background-color: #0088a8;
+    transform: translateY(-3px);
+}
+
+/* MENU HIPERVINCULOS */
+.hipervinculos {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 85px;
+    z-index: 998;
+}
+
+/* CONTENEDOR FLEX */
+.flexHiper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 18px 20px;
+    flex-wrap: wrap;
+}
+
+/* ANIMACION HOVER SUAVE */
+.flexHiper > div {transition: all 0.3s ease;}
+
+/* LINKS MENU HIPERVINCULOS */
+.linkHiper {
+    text-decoration: none;
+    color: #1d4f73;
+    font-weight: 600;
+    padding: 12px 18px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+.linkHiper:hover {
+    background: rgba(0,163,200,0.10);
+    color: #00a3c8;
+}
+
+/* LINK ACTIVO */
+.linkHiper.active {
+    background: #00a3c8;
+    color: white;
+    border-radius: 30px;
+    padding: 12px 18px;
+    box-shadow: 0 8px 20px rgba(0,163,200,0.25);
+}
+
+/* ICONOS */
+.icon {width: 20px; height: 20px;}
+.iconSubir {width: 30px; height: 30px;}
+
+/* CONTENEDOR GENERAL */
+.container {
+    width: 90%;
+    max-width: 1300px;
+    margin: auto;
+    padding: 80px 0;
+}
+
+/* SECCIONES CARD Y HERO */
+.hero, .card {
+    background: white;
+    border-radius: 22px;
+    overflow: hidden;
+    margin-bottom: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+}
+.hero:hover, .card:hover {transform: translateY(-5px);}
+.hero img, .card img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+}
+.hero h1, .card h1 {
+    font-size: 2rem;
+    color: #0d3556;
+    padding: 30px 35px 10px;
+}
+.hero p, .card p {
+    padding: 0 35px 35px;
+    color: #546370;
+    font-size: 1.05rem;
+}
+
+/* SECCION PERSONAL */
+.sectionPersonal {margin-top: 60px;}
+.contenedor_thumbnail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+.medicos {
+    width: 100%;
+    height: 260px;
+    border-radius: 18px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+.medicos:hover {transform: scale(1.03);}
+
+/* FOOTER */
+footer {
+    background: #0d3556;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+}
+footer h3 {
+    margin: 20px 0;
+    font-size: 1.3rem;
+}
+footer p {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+footer img {
+    width: 38px;
+    transition: transform 0.3s ease;
+}
+footer img:hover {transform: scale(1.15);}
+
+/* =========================
+   UTILIDADES
+========================= */
+.flex {display: flex; align-items: center;}
+.gap5 {gap: 5px;}
+.gap20 {gap: 20px;}
+.mrgAuto {margin: auto;}
+
+/* ANIMACIONES */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1s ease forwards;
+}
+.delay-1 {animation-delay: 0.4s;}
+.delay-2 {animation-delay: 0.8s;}
+
+/* KEYFRAMES */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .banner-content h1 {font-size: 2.5rem;}
+    .banner-content p {font-size: 1rem;}
+    .flexHiper {gap: 15px;}
+    .hero h1, .card h1 {font-size: 1.5rem;}
+    .container {width: 95%;}
+}

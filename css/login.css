@@ -1,0 +1,239 @@
+/* =========================================
+   RESET GENERAL
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CONFIGURACION GLOBAL */
+html, body {min-height: 100vh;}
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(rgba(7, 32, 54, 0.72), rgba(7, 32, 54, 0.72));
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CONTENIDO PRINCIPAL */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+/* CREDENCIALES DEMO */
+.credenciales {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 40px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 35px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+}
+
+/* TITULO */
+.credenciales h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: white;
+}
+
+/* GRID */
+.credenciales-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* TARJETAS */
+.credencial-card {
+    background: rgba(255,255,255,0.10);
+    border-radius: 18px;
+    padding: 25px;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.3s ease;
+}
+
+/* HOVER */
+.credencial-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.15);
+}
+
+/* TITULO TARJETA */
+.credencial-card h3 {
+    margin-bottom: 18px;
+    font-size: 1.3rem;
+    color: #7ddfff;
+}
+
+/* TEXTO */
+.credencial-card p {
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+/* STRONG */
+.credencial-card strong {color: white;}
+
+/* TITULO */
+h1 {
+    margin-bottom: 35px;
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* MENSAJE ERROR */
+.error {
+    background: rgba(255, 77, 77, 0.15);
+    color: #ffd0d0;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    text-align: center;
+    width: 100%;
+    max-width: 460px;
+}
+
+/* CONTENEDOR LOGIN */
+.container {
+    width: 100%;
+    max-width: 460px;
+    background: rgba(255,255,255,0.96);
+    padding: 50px;
+    border-radius: 28px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: aparecer 0.8s ease;
+}
+
+/* FORMULARIO */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid #d7e1ea;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #f8fbfd;
+}
+
+/* EFECTO FOCUS */
+input:focus {
+    border-color: #00a3c8;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0,163,200,0.15);
+}
+
+/* BOTON */
+button {
+    border: none;
+    padding: 18px;
+    border-radius: 40px;
+    background: #00a3c8;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* HOVER BOTON */
+button:hover {
+    background: #008fb0;
+    transform: translateY(-3px);
+}
+
+/* TEXTO REGISTRO */
+.registro-texto {
+    margin-top: 25px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* LINK */
+.registro-texto a {
+    color: #7ddfff;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+}
+.registro-texto a:hover {text-decoration: underline;}
+
+/* FOOTER */
+footer {
+    width: 100%;
+    background: rgba(7, 32, 54, 0.96);
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: auto;
+}
+
+/* TITULO FOOTER */
+footer h3 {
+    margin: 18px 0;
+    font-size: 1.2rem;
+}
+
+/* REDES */
+.redes-sociales {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+/* ICONOS */
+.redes-sociales img {
+    width: 38px;
+    transition: transform 0.3s ease;
+}
+
+/* HOVER ICONOS */
+.redes-sociales img:hover {transform: scale(1.12);}
+
+/* ANIMACION */
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    h1 {font-size: 2.2rem;}
+    .container {
+        width: 92%;
+        padding: 35px 25px;
+    }
+    input {padding: 16px;}
+}
