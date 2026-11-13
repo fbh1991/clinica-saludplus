@@ -16,3 +16,6 @@ Thumbs.db
 # Configuración del editor
 .vscode/
 .idea/
+
+# Configuración local con credenciales
+/includes/.env.php
