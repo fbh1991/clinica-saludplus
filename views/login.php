@@ -25,6 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // Verificar contraseña
             if (password_verify($password, $fila['password'])) {
 
+                // Regenerar el identificador para reducir el riesgo de fijación de sesión.
+                session_regenerate_id(true);
+
                 // Crear sesión
                 $_SESSION['idUser'] = $fila['idUser'];
                 $_SESSION['usuario'] = $fila['usuario'];
@@ -60,24 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <!-- Contenedor principal -->
     <main class="main-content">
-        <!-- Tarjeta credenciales -->
-        <section class="credenciales">
-            <h2>Credenciales de prueba</h2>
-            <div class="credenciales-grid">
-                <!-- Administrador -->
-                <div class="credencial-card">
-                    <h3>Administrador</h3>
-                    <p><strong>Usuario: </strong> fernando123</p>
-                    <p><strong>Contraseña: </strong> fernando123</p>
-                </div>
-                <!-- Usuario -->
-                <div class="credencial-card">
-                    <h3>Usuario</h3>
-                    <p><strong>Usuario: </strong>patricia123</p>
-                    <p><strong>Contraseña: </strong>patricia123</p>
-                </div>
-            </div>
-        </section>
+        <p class="login-help">Accede con tu cuenta registrada para consultar tus servicios.</p>
         <h1>Iniciar sesión</h1>
 
         <!-- Mensaje de error -->
