@@ -1,7 +1,7 @@
 <?php
 
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    require_once __DIR__ . "/security.php";
 }
 
 require_once(__DIR__ . "/config.php");
@@ -84,10 +84,10 @@ require_once(__DIR__ . "/config.php");
                 </li>
 
                 <li>
-                    <a class="btn-logout"
-                       href="<?php echo BASE_URL?>logout.php">
-                        Cerrar sesión
-                    </a>
+                    <form method="POST" action="<?php echo BASE_URL ?>logout.php">
+                        <?= csrf_field() ?>
+                        <button class="btn-logout" type="submit">Cerrar sesión</button>
+                    </form>
                 </li>
 
             <?php elseif ($_SESSION['rol'] === 'admin'): ?>
@@ -119,10 +119,10 @@ require_once(__DIR__ . "/config.php");
                 </li>
 
                 <li>
-                    <a class="btn-logout"
-                       href="<?php echo BASE_URL?>logout.php">
-                        Salir
-                    </a>
+                    <form method="POST" action="<?php echo BASE_URL ?>logout.php">
+                        <?= csrf_field() ?>
+                        <button class="btn-logout" type="submit">Cerrar sesión</button>
+                    </form>
                 </li>
 
             <?php endif; ?>

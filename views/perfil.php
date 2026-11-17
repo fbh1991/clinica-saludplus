@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 
 // Proteger acceso
@@ -17,6 +17,8 @@ $idUser = $_SESSION['idUser'];
 $mensaje = "";
 
 // Actualizar datos
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { csrf_validate(); }
+
 if (isset($_POST['actualizar'])) {
 
     $nombre = trim($_POST['nombre']);
@@ -25,9 +27,12 @@ if (isset($_POST['actualizar'])) {
     $telefono = trim($_POST['telefono']);
     $fecha = $_POST['fecha'];
     $direccion = trim($_POST['direccion']);
-    $sexo = $_POST['sexo'];
+    $sexo = $_POST['sexo'] ?? 'No especificado';
+    if (!in_array($sexo, ['Hombre', 'Mujer', 'No especificado'], true)) { $sexo = 'No especificado'; }
 
-    try {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/^[0-9]{9}$/', $telefono) || !valid_date($fecha) || $fecha > date('Y-m-d')) {
+        $mensaje = "<p class='mensaje-error'>Revisa el correo, teléfono y fecha de nacimiento.</p>";
+    } else try {
 
         SQL::actualizarDatosUsuario($idUser, $nombre, $apellidos, $email, $telefono, $fecha, $direccion, $sexo);
         $mensaje = "<p class='mensaje-ok'>Datos actualizados correctamente</p>";
@@ -39,9 +44,11 @@ if (isset($_POST['actualizar'])) {
 // Cambiar contraseña
 if (isset($_POST['cambiar_pass'])) {
 
-    $passwordNueva = trim($_POST['nueva_password']);
+    $passwordActual = $_POST['password_actual'] ?? '';
+    $passwordNueva = $_POST['nueva_password'] ?? '';
+    $hashActual = SQL::obtenerHashPassword($idUser);
 
-    if (strlen($passwordNueva) >= 6) {
+    if ($hashActual && password_verify($passwordActual, $hashActual) && strlen($passwordNueva) >= 10) {
 
         try {
 
@@ -54,7 +61,7 @@ if (isset($_POST['cambiar_pass'])) {
             $mensaje = "<p class='mensaje-error'>Error al actualizar contraseña</p>";
         }
     } else {
-        $mensaje = "<p class='mensaje-error'>La contraseña debe tener al menos 6 caracteres</p>";
+        $mensaje = "<p class='mensaje-error'>La contraseña actual no es correcta o la nueva contraseña tiene menos de 10 caracteres</p>";
     }
 }
 
@@ -91,6 +98,7 @@ $usuario = SQL::obtenerUsuario($idUser);
             <h2>Datos personales</h2>
             <div class="perfil-card">
                 <form class="perfil-form" method="POST">
+                    <?= csrf_field() ?>
                     <input type="text" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" placeholder="Nombre" required>
                     <input type="text" name="apellidos" value="<?= htmlspecialchars($usuario['apellidos']) ?>" placeholder="Apellidos" required>
                     <input type="email" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" placeholder="Correo electrónico" required>
@@ -100,7 +108,7 @@ $usuario = SQL::obtenerUsuario($idUser);
                     <select name="sexo">
                         <option value="Hombre" <?= $usuario['sexo'] === "Hombre" ? "selected" : "" ?>>Hombre</option>
                         <option value="Mujer" <?= $usuario['sexo'] === "Mujer" ? "selected" : "" ?>>Mujer</option>
-                        <option value="Otro" <?= $usuario['sexo'] === "Otro" ? "selected" : "" ?>>Otro</option>
+                        <option value="No especificado" <?= $usuario['sexo'] === "No especificado" ? "selected" : "" ?>>No especificado</option>
                     </select>
                     <button class="perfil-btn" type="submit" name="actualizar">Actualizar datos</button>
                 </form>
@@ -111,7 +119,9 @@ $usuario = SQL::obtenerUsuario($idUser);
             <h2>Cambiar contraseña</h2>
             <div class="perfil-card password-card">
                 <form class="perfil-form password-form" method="POST">
-                    <input type="password" name="nueva_password" placeholder="Nueva contraseña" required>
+                    <?= csrf_field() ?>
+                    <input type="password" name="password_actual" placeholder="Contraseña actual" required>
+                    <input type="password" name="nueva_password" placeholder="Nueva contraseña (mínimo 10 caracteres)" minlength="10" required>
                     <button class="perfil-btn password-btn" type="submit" name="cambiar_pass">Cambiar contraseña</button>
                 </form>
             </div>

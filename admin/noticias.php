@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 
 // Sólo admin
@@ -17,47 +17,76 @@ $idUser = $_SESSION['idUser'];
 $mensaje = "";
 
 // Crear noticia
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { csrf_validate(); }
+
 if (isset($_POST['crear'])) {
 
     $titulo = trim($_POST['titulo']);
     $texto = trim($_POST['texto']);
     $fecha = date("Y-m-d");
 
-    // Validar imagen
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === 0) {
-        $permitidos = ['jpg', 'jpeg', 'png', 'webp'];
-        $nombreImagen = $_FILES['imagen']['name'];
-        $extension = strtolower(pathinfo($nombreImagen, PATHINFO_EXTENSION));
-        if (in_array($extension, $permitidos)) {
+    // Validar contenido y archivo en el servidor (no confiar en el nombre/extensión del cliente).
+    $errores = [];
+    if ($titulo === '' || mb_strlen($titulo, 'UTF-8') > 180) {
+        $errores[] = 'El título es obligatorio y no puede superar 180 caracteres.';
+    }
+    if ($texto === '' || mb_strlen($texto, 'UTF-8') > 12000) {
+        $errores[] = 'El contenido es obligatorio y no puede superar 12.000 caracteres.';
+    }
 
-            // Genero nombre unico para la imagen de la noticia
-            $nuevoNombre = uniqid("noticia_", true) . "." . $extension;
-            $rutaFisica = "../images/images_noticias/" . $nuevoNombre;
-            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaFisica)) {
+    if (!isset($_FILES['imagen']) || $_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
+        $errores[] = 'Debes seleccionar una imagen válida.';
+    } elseif ($_FILES['imagen']['size'] > 3 * 1024 * 1024) {
+        $errores[] = 'La imagen no puede superar los 3 MB.';
+    }
+
+    if (empty($errores)) {
+        $tmp = $_FILES['imagen']['tmp_name'];
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($tmp);
+        $tipos = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp'
+        ];
+        $imagenInfo = @getimagesize($tmp);
+
+        if (!isset($tipos[$mime]) || $imagenInfo === false || $imagenInfo[0] > 6000 || $imagenInfo[1] > 6000) {
+            $errores[] = 'El archivo debe ser una imagen JPG, PNG o WEBP válida (máximo 6000 × 6000 píxeles).';
+        } else {
+            $extension = $tipos[$mime];
+            $nuevoNombre = bin2hex(random_bytes(16)) . '.' . $extension;
+            $directorio = __DIR__ . '/../images/images_noticias/';
+            if (!is_dir($directorio) && !mkdir($directorio, 0755, true)) {
+                $errores[] = 'No se pudo preparar el directorio de imágenes.';
+            } elseif (move_uploaded_file($tmp, $directorio . $nuevoNombre)) {
                 try {
                     SQL::crearNoticia($titulo, $nuevoNombre, $texto, $fecha, $idUser);
                     $mensaje = "<p class='mensaje-ok'>Noticia creada correctamente</p>";
-                } catch (PDOException $e) {
+                } catch (Throwable $e) {
+                    @unlink($directorio . $nuevoNombre);
+                    error_log('No se pudo guardar una noticia: ' . $e->getMessage());
                     $mensaje = "<p class='mensaje-error'>Error al guardar noticia</p>";
                 }
             } else {
-                $mensaje = "<p class='mensaje-error'>Error al subir imagen</p>";
+                $errores[] = 'No se pudo guardar la imagen.';
             }
-        } else {
-            $mensaje = "<p class='mensaje-error'>Formato de imagen no permitido</p>";
         }
-    } else {
-        $mensaje = "<p class='mensaje-error'>Debes seleccionar una imagen</p>";
+    }
+
+    if (!empty($errores)) {
+        $mensaje = "<p class='mensaje-error'>" . htmlspecialchars(implode(' ', $errores), ENT_QUOTES, 'UTF-8') . "</p>";
     }
 }
 
 // Eliminar noticia
-if (isset($_GET['eliminar'])) {
-    $idNoticia = (int) $_GET['eliminar'];
+if (isset($_POST['eliminar'])) {
+    $idNoticia = (int) $_POST['eliminar'];
     try {
         $noticia = SQL::obtenerImagenNoticia($idNoticia);
         if ($noticia) {
-            $rutaImagen = "../images/images_noticias/" . $noticia['imagen'];
+            $nombreSeguro = basename((string) $noticia['imagen']);
+            $rutaImagen = __DIR__ . '/../images/images_noticias/' . $nombreSeguro;
             if (file_exists($rutaImagen)) {
                 unlink($rutaImagen);
             }
@@ -74,7 +103,9 @@ if (isset($_POST['editar'])) {
     $idNoticia = (int) $_POST['idNoticia'];
     $titulo = trim($_POST['titulo']);
     $texto = trim($_POST['texto']);
-    try {
+    if ($titulo === '' || mb_strlen($titulo, 'UTF-8') > 180 || $texto === '' || mb_strlen($texto, 'UTF-8') > 12000) {
+        $mensaje = "<p class='mensaje-error'>Revisa el título y el contenido de la noticia.</p>";
+    } else try {
         SQL::actualizarNoticia($idNoticia, $titulo, $texto);
         $mensaje = "<p class='mensaje-ok'>Noticia actualizada correctamente</p>";
     } catch (PDOException $e) {
@@ -112,6 +143,7 @@ $noticias = SQL::obtenerNoticias();
         <h2>Nueva noticia</h2>
         <div class="admin-card">
             <form class="cms-form" method="POST" enctype="multipart/form-data">
+                    <?= csrf_field() ?>
                 <input type="text" name="titulo" placeholder="Título de la noticia" required>
                 <textarea name="texto" placeholder="Contenido de la noticia" required></textarea>
                 <input type="file" name="imagen" accept=".jpg,.jpeg,.png,.webp" required>
@@ -134,12 +166,17 @@ $noticias = SQL::obtenerNoticias();
                         <?= nl2br(htmlspecialchars($fila['texto'])) ?>
                     </div>
                     <form class="cms-form" method="POST">
+                    <?= csrf_field() ?>
                         <input type="hidden" name="idNoticia" value="<?= $fila['idNoticia'] ?>">
                         <input type="text" name="titulo" value="<?= htmlspecialchars($fila['titulo']) ?>">
                         <textarea name="texto"><?= htmlspecialchars($fila['texto']) ?></textarea>
                         <button class="btn-actualizar" type="submit" name="editar">Actualizar noticia</button>
                     </form>
-                    <a class="eliminar-btn" href="noticias.php?eliminar=<?= $fila['idNoticia'] ?>">Eliminar noticia</a>
+                    <form method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta noticia?')">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="eliminar" value="<?= (int) $fila['idNoticia'] ?>">
+                        <button class="eliminar-btn" type="submit">Eliminar noticia</button>
+                    </form>
                 </div>
             </div>
 

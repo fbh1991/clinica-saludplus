@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 require_once("../includes/DB.php");
 require_once("../includes/SQL.php");
@@ -10,35 +10,43 @@ $error = "";
 
 // Procesar login
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    csrf_validate();
 
-    $usuario = trim($_POST['usuario']);
-    $password = $_POST['password'];
+    $usuario = trim((string) ($_POST['usuario'] ?? ''));
+    $password = (string) ($_POST['password'] ?? '');
+    if (strlen($usuario) > 40 || strlen($password) > 1024) { $usuario = ''; $password = ''; }
 
     try {
 
         // Buscar usuario
         $fila = SQL::obtenerLoginUsuario($usuario);
 
-        // Verificar si existe
-        if ($fila) {
+        
+// Verificar usuario, contraseña y rol
+if (
+    $fila &&
+    in_array($fila['rol'], ['user', 'admin'], true) &&
+    password_verify($password, $fila['password'])
+) {
+    // Regenerar el identificador de sesión
+    session_regenerate_id(true);
 
-            // Verificar contraseña
-            if (password_verify($password, $fila['password'])) {
+    // Renovar el token CSRF tras autenticar al usuario
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-                // Crear sesión
-                $_SESSION['idUser'] = $fila['idUser'];
-                $_SESSION['usuario'] = $fila['usuario'];
-                $_SESSION['rol'] = $fila['rol'];
+    // Crear sesión
+    $_SESSION['idUser'] = $fila['idUser'];
+    $_SESSION['usuario'] = $fila['usuario'];
+    $_SESSION['rol'] = $fila['rol'];
 
-                // Redirigir al inicio
-                header("Location: ../index.php");
-                exit();
-            } else {
-                $error = "Contraseña incorrecta";
-            }
-        } else {
-            $error = "Usuario no encontrado";
-        }
+    // Redirigir al inicio
+    header("Location: ../index.php");
+    exit();
+
+} else {
+    $error = "Usuario o contraseña incorrectos";
+}
+
     } catch (PDOException $e) {
         $error = "Error en el sistema";
     }
@@ -60,24 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <!-- Contenedor principal -->
     <main class="main-content">
-        <!-- Tarjeta credenciales -->
-        <section class="credenciales">
-            <h2>Credenciales de prueba</h2>
-            <div class="credenciales-grid">
-                <!-- Administrador -->
-                <div class="credencial-card">
-                    <h3>Administrador</h3>
-                    <p><strong>Usuario: </strong> fernando123</p>
-                    <p><strong>Contraseña: </strong> fernando123</p>
-                </div>
-                <!-- Usuario -->
-                <div class="credencial-card">
-                    <h3>Usuario</h3>
-                    <p><strong>Usuario: </strong>patricia123</p>
-                    <p><strong>Contraseña: </strong>patricia123</p>
-                </div>
-            </div>
-        </section>
+        <p class="login-help">Accede con tu cuenta registrada para consultar tus servicios.</p>
         <h1>Iniciar sesión</h1>
 
         <!-- Mensaje de error -->
@@ -91,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <section class="container">
             <form method="POST">
+                    <?= csrf_field() ?>
                 <input type="text" name="usuario" placeholder="Usuario" required>
                 <input type="password" name="password" placeholder="Contraseña" required>
                 <button type="submit">Entrar</button>

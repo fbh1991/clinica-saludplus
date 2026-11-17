@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../includes/security.php';
+
 require_once("../includes/config.php");
 require_once("../includes/DB.php");
 require_once("../includes/SQL.php");
@@ -12,6 +14,7 @@ $mensaje = "";
 
 // Procesar formulario
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    csrf_validate();
 
     // Recoger y limpiar datos
     $nombre = trim($_POST['nombre']);
@@ -20,7 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $telefono = trim($_POST['telefono']);
     $fecha = $_POST['fecha'];
     $direccion = trim($_POST['direccion']);
-    $sexo = $_POST['sexo'];
+    $sexo = $_POST['sexo'] ?? '';
+    if (!in_array($sexo, ['Hombre', 'Mujer', 'No especificado'], true)) { $sexo = 'No especificado'; }
 
     $usuario = trim($_POST['usuario']);
     $password = $_POST['password'];
@@ -39,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Email válido
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
         $errores[] = "El correo electrónico no es válido.";
     }
 
@@ -49,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Fecha de nacimiento
-    if (empty($fecha)) {
+    if (empty($fecha) || !valid_date($fecha)) {
         $errores[] = "Debes indicar una fecha de nacimiento.";
     } else {
 
@@ -62,13 +66,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Usuario
-    if (strlen($usuario) < 4) {
+    if (strlen($usuario) < 4 || strlen($usuario) > 40 || !preg_match('/^[a-zA-Z0-9_.-]+$/', $usuario)) {
         $errores[] = "El usuario debe tener al menos 4 caracteres.";
     }
 
     // Contraseña
-    if (strlen($password) < 6) {
-        $errores[] = "La contraseña debe tener al menos 6 caracteres.";
+    if (strlen($password) < 10) {
+        $errores[] = "La contraseña debe tener al menos 10 caracteres.";
     }
 
     // Si hay errores los mostramos
@@ -135,6 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?= $mensaje ?>
 
             <form method="POST">
+                    <?= csrf_field() ?>
                 <input type="text" name="nombre" placeholder="Nombre" required>
                 <input type="text" name="apellidos" placeholder="Apellidos" required>
                 <input type="email" name="email" placeholder="Correo electrónico" required>

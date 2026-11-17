@@ -82,15 +82,42 @@
     transform: translateY(-2px);
 }
 
-/* LOGOUT */
-.btn-logout {
-    background: #ff5a5a;
-    color: white !important;
+/* CERRAR SESIÓN: apariencia uniforme en todas las páginas */
+.nav-links li form {
+    display: flex;
+    align-items: center;
+    margin: 0;
 }
-.btn-logout:hover {
-    background: #df4040 !important;
-    color: white !important;
-    transform: translateY(-2px);
+
+.nav-links .btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 28px;
+    background: #ff555b !important;
+    color: #ffffff !important;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: none;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.nav-links .btn-logout:hover {
+    background: #ed454c !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.nav-links .btn-logout:focus-visible {
+    outline: 3px solid rgba(0, 163, 200, 0.45);
+    outline-offset: 3px;
 }
 
 /* RESPONSIVE */

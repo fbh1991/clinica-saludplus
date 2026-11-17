@@ -46,10 +46,6 @@ CREATE TABLE `citas` (
 -- Volcado de datos para la tabla `citas`
 --
 
-INSERT INTO `citas` (`idCita`, `idUser`, `fecha_cita`, `motivo_cita`) VALUES
-(1, 2, '2026-06-18', 'Radiografía'),
-(2, 2, '2026-06-19', 'Cirugía'),
-(3, 2, '2026-06-30', 'Traumatologia');
 
 -- --------------------------------------------------------
 
@@ -76,10 +72,6 @@ CREATE TABLE `noticias` (
 -- Volcado de datos para la tabla `noticias`
 --
 
-INSERT INTO `noticias` (`idNoticia`, `titulo`, `imagen`, `texto`, `fecha`, `idUser`) VALUES
-(1, 'Primera noticia de la web', 'noticia_6a2004fab54275.36774953.jpg', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset\'s Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software including versions of Lorem Ipsum.', '2026-06-03', 1),
-(2, 'Segunda noticia de la web', 'noticia_6a20050e20dd79.43912807.jpg', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset\'s Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software including versions of Lorem Ipsum.', '2026-06-03', 1),
-(3, 'Tercera noticia de la web', 'noticia_6a200517720896.42329515.jpg', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset\'s Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software including versions of Lorem Ipsum.', '2026-06-03', 1);
 
 -- --------------------------------------------------------
 
@@ -95,7 +87,7 @@ CREATE TABLE `users_data` (
   `telefono` varchar(20) DEFAULT NULL,
   `fecha_nacimiento` date DEFAULT NULL,
   `direccion` varchar(255) DEFAULT NULL,
-  `sexo` enum('Hombre','Mujer','Otro') DEFAULT NULL
+  `sexo` enum('Hombre','Mujer','No especificado') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -106,9 +98,6 @@ CREATE TABLE `users_data` (
 -- Volcado de datos para la tabla `users_data`
 --
 
-INSERT INTO `users_data` (`idUser`, `nombre`, `apellidos`, `email`, `telefono`, `fecha_nacimiento`, `direccion`, `sexo`) VALUES
-(1, 'Fernando', 'Barajas', 'admin@gmail.com', '666666666', '1991-06-06', 'C/Juan Carlos I', 'Hombre'),
-(2, 'Patricia', 'Ferrer', 'usuario@gmail.com', '777777777', '1992-07-08', 'Calle San Claudio', 'Mujer');
 
 -- --------------------------------------------------------
 
@@ -134,9 +123,6 @@ CREATE TABLE `users_login` (
 -- Volcado de datos para la tabla `users_login`
 --
 
-INSERT INTO `users_login` (`idLogin`, `idUser`, `usuario`, `password`, `rol`) VALUES
-(1, 1, 'fernando123', '$2y$10$oVaMlabUGU7TXpSA8EzvOugV5X1uGXrZJJwINFbf3nYHXkXGaHblm', 'admin'),
-(2, 2, 'patricia123', '$2y$10$/1VTXkShImzw9OZLcz4XE.XruA6c5sJZfZKbZ6UuMLke/FazFWKGC', 'user');
 
 --
 -- Índices para tablas volcadas

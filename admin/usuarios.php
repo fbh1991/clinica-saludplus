@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 
 // Sólo admin
@@ -15,101 +15,241 @@ require_once("../includes/SQL.php");
 $mensaje = "";
 
 // Crear usuario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
+}
+
 if (isset($_POST['crear'])) {
 
-    $nombre = trim($_POST['nombre']);
-    $apellidos = trim($_POST['apellidos']);
-    $email = trim($_POST['email']);
-    $telefono = trim($_POST['telefono']);
-    $fecha = $_POST['fecha'];
-    $direccion = trim($_POST['direccion']);
-    $sexo = $_POST['sexo'];
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellidos = trim($_POST['apellidos'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $fecha = trim($_POST['fecha'] ?? '');
+    $direccion = trim($_POST['direccion'] ?? '');
+    $sexo = $_POST['sexo'] ?? 'Otro';
+    $usuario = trim($_POST['usuario'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $rol = $_POST['rol'] ?? 'user';
 
-    $usuario = trim($_POST['usuario']);
-    $password = $_POST['password'];
-    $rol = $_POST['rol'];
+    $errores = [];
 
-    if (strlen($password) < 6) {
-        $mensaje = "<div class='mensaje-error'>La contraseña debe tener al menos 6 caracteres</div>";
+    // Validar nombre y apellidos
+    if (!preg_match('/^[\p{L}\s]+$/u', $nombre)) {
+        $errores[] = 'El nombre solo puede contener letras y espacios';
+    }
+
+    if (!preg_match('/^[\p{L}\s]+$/u', $apellidos)) {
+        $errores[] = 'Los apellidos solo pueden contener letras y espacios';
+    }
+
+    // Validar email
+    if (
+        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+        strlen($email) > 254
+    ) {
+        $errores[] = 'El email no es válido';
+    }
+
+    // Validar teléfono
+    if (!preg_match('/^\d{9}$/', $telefono)) {
+        $errores[] = 'El teléfono debe contener exactamente 9 dígitos';
+    }
+
+    // Validar fecha
+    if (
+        !valid_date($fecha) ||
+        $fecha > date('Y-m-d')
+    ) {
+        $errores[] = 'La fecha de nacimiento no es válida';
+    }
+
+    // Validar usuario
+    if (
+        strlen($usuario) < 4 ||
+        strlen($usuario) > 40 ||
+        !preg_match('/^[a-zA-Z0-9_.-]+$/', $usuario)
+    ) {
+        $errores[] = 'El usuario debe tener entre 4 y 40 caracteres y solo puede contener letras, números, puntos, guiones y guiones bajos';
+    }
+
+    // Validar contraseña
+    if (strlen($password) < 10) {
+        $errores[] = 'La contraseña debe tener al menos 10 caracteres';
+    }
+
+    // Validar sexo y rol
+    if (!in_array($sexo, ['Hombre', 'Mujer', 'Otro'], true)) {
+        $sexo = 'Otro';
+    }
+
+    if (!in_array($rol, ['user', 'admin'], true)) {
+        $rol = 'user';
+    }
+
+    if (!empty($errores)) {
+
+        $mensaje = "<div class='mensaje-error'>" .
+            htmlspecialchars(implode('. ', $errores)) .
+            "</div>";
+
     } else {
+
         try {
+
             if (SQL::existeUsuario($usuario)) {
+
                 $mensaje = "<div class='mensaje-error'>El usuario ya existe</div>";
+
             } else {
+
                 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
                 $conn = DB::conn();
                 $conn->beginTransaction();
 
-                // Insertar datos personales
-                $idUser = SQL::insertarUsuarioData($nombre, $apellidos, $email, $telefono, $fecha, $direccion, $sexo);
+                $idUser = SQL::insertarUsuarioData(
+                    $nombre,
+                    $apellidos,
+                    $email,
+                    $telefono,
+                    $fecha,
+                    $direccion,
+                    $sexo
+                );
 
-                // Insertar login
-                SQL::insertarLoginAdmin($idUser, $usuario, $passwordHash, $rol);
+                SQL::insertarLoginAdmin(
+                    $idUser,
+                    $usuario,
+                    $passwordHash,
+                    $rol
+                );
+
                 $conn->commit();
+
                 $mensaje = "<div class='mensaje-ok'>Usuario creado correctamente</div>";
             }
-        } catch (PDOException $e) {
-            if (isset($conn)) {
+
+        } catch (PDOException | RuntimeException $e) {
+
+            if (isset($conn) && $conn->inTransaction()) {
                 $conn->rollBack();
             }
+
             $mensaje = "<div class='mensaje-error'>Error al crear usuario</div>";
         }
-    }
-}
-
-// Eliminar usuario
-if (isset($_GET['eliminar'])) {
-
-    $idUser = (int) $_GET['eliminar'];
-
-    // Evitar borrarse a sí mismo (administrador)
-    if ($idUser !== $_SESSION['idUser']) {
-
-        try {
-            $conn = DB::conn();
-            $conn->beginTransaction();
-            SQL::eliminarLogin($idUser);
-            SQL::eliminarUsuarioData($idUser);
-            $conn->commit();
-            $mensaje = "<div class='mensaje-ok'>Usuario eliminado correctamente</div>";
-        } catch (PDOException $e) {
-
-            if (isset($conn)) {
-                $conn->rollBack();
-            }
-
-            $mensaje = "<div class='mensaje-error'>Error al eliminar usuario</div>";
-        }
-    } else {
-        $mensaje = "<div class='mensaje-error'>No puedes eliminar tu propia cuenta</div>";
     }
 }
 
 // Editar usuario
 if (isset($_POST['editar'])) {
 
-    $idUser = (int) $_POST['idUser'];
+    $idUser = (int) ($_POST['idUser'] ?? 0);
 
-    $nombre = trim($_POST['nombre']);
-    $apellidos = trim($_POST['apellidos']);
-    $email = trim($_POST['email']);
-    $telefono = trim($_POST['telefono']);
-    $fecha = $_POST['fecha'];
-    $direccion = trim($_POST['direccion']);
-    $sexo = $_POST['sexo'];
-    $rol = $_POST['rol'];
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellidos = trim($_POST['apellidos'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $fecha = trim($_POST['fecha'] ?? '');
+    $direccion = trim($_POST['direccion'] ?? '');
+    $sexo = $_POST['sexo'] ?? 'Otro';
+    $rol = $_POST['rol'] ?? 'user';
 
-    try {
+    $errores = [];
 
-        SQL::actualizarUsuarioAdmin($idUser, $nombre, $apellidos, $email, $telefono, $fecha, $direccion, $sexo);
+    // Validar identificador
+    if ($idUser <= 0) {
+        $errores[] = 'El usuario seleccionado no es válido';
+    }
 
-        SQL::actualizarRolUsuario($idUser, $rol);
+    // Permitir letras, espacios, guiones y apóstrofes
+    if (!preg_match("/^[\p{L}\s'-’]+$/u", $nombre)) {
+        $errores[] = 'El nombre contiene caracteres no válidos';
+    }
 
-        $mensaje = "<div class='mensaje-ok'>Usuario actualizado correctamente</div>";
-    } catch (PDOException $e) {
-        $mensaje = "<div class='mensaje-error'>Error al actualizar usuario</div>";
+    if (!preg_match("/^[\p{L}\s'-’]+$/u", $apellidos)) {
+        $errores[] = 'Los apellidos contienen caracteres no válidos';
+    }
+
+    // Validar email
+    if (
+        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+        strlen($email) > 254
+    ) {
+        $errores[] = 'El email no es válido';
+    }
+
+    // Validar teléfono
+    if (!preg_match('/^\d{9}$/', $telefono)) {
+        $errores[] = 'El teléfono debe contener exactamente 9 dígitos';
+    }
+
+    // Validar fecha
+    if (
+        !valid_date($fecha) ||
+        $fecha > date('Y-m-d')
+    ) {
+        $errores[] = 'La fecha de nacimiento no es válida';
+    }
+
+    // Validar sexo
+    if (!in_array($sexo, ['Hombre', 'Mujer', 'Otro'], true)) {
+        $sexo = 'Otro';
+    }
+
+    // Validar rol
+    if (!in_array($rol, ['user', 'admin'], true)) {
+        $rol = 'user';
+    }
+
+    // Evitar que el administrador se quite sus propios permisos
+    if ($idUser === (int) $_SESSION['idUser']) {
+        $rol = 'admin';
+    }
+
+    if (!empty($errores)) {
+
+        $mensaje = "<div class='mensaje-error'>" .
+            htmlspecialchars(implode('. ', $errores)) .
+            "</div>";
+
+    } else {
+
+        $conn = null;
+
+        try {
+
+            $conn = DB::conn();
+            $conn->beginTransaction();
+
+            SQL::actualizarUsuarioAdmin(
+                $idUser,
+                $nombre,
+                $apellidos,
+                $email,
+                $telefono,
+                $fecha,
+                $direccion,
+                $sexo
+            );
+
+            SQL::actualizarRolUsuario($idUser, $rol);
+
+            $conn->commit();
+
+            $mensaje = "<div class='mensaje-ok'>Usuario actualizado correctamente</div>";
+
+        } catch (PDOException | RuntimeException $e) {
+
+            if ($conn !== null && $conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            $mensaje = "<div class='mensaje-error'>Error al actualizar usuario</div>";
+        }
     }
 }
+
 
 // Llamo al método para obtener usuario
 $usuarios = SQL::obtenerUsuariosAdmin();
@@ -142,6 +282,7 @@ $usuarios = SQL::obtenerUsuariosAdmin();
 
         <div class="usuarios-card">
             <form class="usuarios-form" method="POST">
+                    <?= csrf_field() ?>
                 <input type="text" name="nombre" placeholder="Nombre" required>
                 <input type="text" name="apellidos" placeholder="Apellidos" required>
                 <input type="email" name="email" placeholder="Email" required>
@@ -180,6 +321,7 @@ $usuarios = SQL::obtenerUsuariosAdmin();
 
                 <!-- Formulario para editar/eliminar usuario -->
                 <form class="usuarios-form editar-form" method="POST">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="idUser" value="<?= $fila['idUser'] ?>">
                     <input type="text" name="nombre" value="<?= htmlspecialchars($fila['nombre']) ?>" required>
                     <input type="text" name="apellidos" value="<?= htmlspecialchars($fila['apellidos']) ?>" required>
@@ -198,7 +340,11 @@ $usuarios = SQL::obtenerUsuariosAdmin();
                     </select>
                     <button class="usuarios-btn btn-actualizar" type="submit" name="editar">Actualizar usuario</button>
                 </form>
-                <a class="btn-eliminar" href="usuarios.php?eliminar=<?= $fila['idUser'] ?>">Eliminar usuario</a>
+                <form method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?')">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="eliminar" value="<?= (int) $fila['idUser'] ?>">
+                    <button class="btn-eliminar" type="submit">Eliminar usuario</button>
+                </form>
             </div>
 
         <?php endforeach; ?>
