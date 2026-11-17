@@ -17,24 +17,50 @@ $mensaje = "";
 /* USUARIO SELECCIONADO */
 $idUsuarioSeleccionado = isset($_GET['idUser']) ? (int) $_GET['idUser'] : (int) ($_POST['idUser'] ?? 0);
 /* CREAR CITA */
-if ($_SERVER['REQUEST_METHOD'] === 'POST') { csrf_validate(); }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
+}
 
 if (isset($_POST['crear'])) {
 
-    $idUser = (int) $_POST['idUser'];
+    $idUser = (int) ($_POST['idUser'] ?? 0);
     $fecha = (string) ($_POST['fecha'] ?? '');
     $motivo = trim((string) ($_POST['motivo'] ?? ''));
 
-    if (valid_date($fecha) && $fecha >= date("Y-m-d") && $motivo !== '' && mb_strlen($motivo, 'UTF-8') <= 500) {
-        try {
+    try {
+
+        // Comprobar que el paciente existe
+        $paciente = SQL::obtenerUsuario($idUser);
+
+        if (!$paciente) {
+
+            $mensaje = "<p class='mensaje-error'>El paciente seleccionado no existe</p>";
+
+        } elseif (
+            !valid_date($fecha) ||
+            $fecha < date('Y-m-d')
+        ) {
+
+            $mensaje = "<p class='mensaje-error'>La fecha de la cita no es válida</p>";
+
+        } elseif (
+            $motivo === '' ||
+            mb_strlen($motivo, 'UTF-8') > 500
+        ) {
+
+            $mensaje = "<p class='mensaje-error'>El motivo debe tener entre 1 y 500 caracteres</p>";
+
+        } else {
+
             SQL::crearCita($idUser, $fecha, $motivo);
+
             $mensaje = "<p class='mensaje-ok'>Cita creada correctamente</p>";
             $idUsuarioSeleccionado = $idUser;
-        } catch (PDOException $e) {
-            $mensaje = "<p class='mensaje-error'>Error al crear cita</p>";
         }
-    } else {
-        $mensaje = "<p class='mensaje-error'>Fecha inválida</p>";
+
+    } catch (PDOException | RuntimeException $e) {
+
+        $mensaje = "<p class='mensaje-error'>Error al crear cita</p>";
     }
 }
 
@@ -42,11 +68,35 @@ if (isset($_POST['crear'])) {
 if (isset($_POST['eliminar'])) {
 
     $idCita = (int) $_POST['eliminar'];
+    $idUser = (int) ($_POST['idUser'] ?? 0);
 
     try {
-        SQL::eliminarCitaAdmin($idCita);
-        $mensaje = "<p class='mensaje-ok'>Cita eliminada correctamente</p>";
-    } catch (PDOException $e) {
+
+        // Comprobar que la cita existe y pertenece al paciente seleccionado
+        $citasPaciente = SQL::obtenerCitasPorUsuario($idUser);
+        $citaExiste = false;
+
+        foreach ($citasPaciente as $cita) {
+            if ((int) $cita['idCita'] === $idCita) {
+                $citaExiste = true;
+                break;
+            }
+        }
+
+        if (!$citaExiste) {
+
+            $mensaje = "<p class='mensaje-error'>La cita seleccionada no existe</p>";
+
+        } else {
+
+            SQL::eliminarCitaAdmin($idCita, $idUser);
+
+            $mensaje = "<p class='mensaje-ok'>Cita eliminada correctamente</p>";
+            $idUsuarioSeleccionado = $idUser;
+        }
+
+    } catch (PDOException | RuntimeException $e) {
+
         $mensaje = "<p class='mensaje-error'>Error al eliminar cita</p>";
     }
 }
@@ -54,19 +104,56 @@ if (isset($_POST['eliminar'])) {
 /* EDITAR CITA */
 if (isset($_POST['editar'])) {
 
-    $idCita = (int) $_POST['idCita'];
+    $idCita = (int) ($_POST['idCita'] ?? 0);
+    $idUser = (int) ($_POST['idUser'] ?? 0);
     $fecha = (string) ($_POST['fecha'] ?? '');
     $motivo = trim((string) ($_POST['motivo'] ?? ''));
 
-    if (valid_date($fecha) && $fecha >= date("Y-m-d") && $motivo !== '' && mb_strlen($motivo, 'UTF-8') <= 500) {
-        try {
-            SQL::actualizarCitaAdmin($idCita, $fecha, $motivo);
-            $mensaje = "<p class='mensaje-ok'>Cita actualizada correctamente</p>";
-        } catch (PDOException $e) {
-            $mensaje = "<p class='mensaje-error'>Error al actualizar cita</p>";
+    try {
+
+        // Comprobar que la cita existe y pertenece al paciente seleccionado
+        $citasPaciente = SQL::obtenerCitasPorUsuario($idUser);
+        $citaExiste = false;
+
+        foreach ($citasPaciente as $cita) {
+            if ((int) $cita['idCita'] === $idCita) {
+                $citaExiste = true;
+                break;
+            }
         }
+
+        if (!$citaExiste) {
+
+            $mensaje = "<p class='mensaje-error'>La cita seleccionada no existe</p>";
+
+        } elseif (
+            !valid_date($fecha) ||
+            $fecha < date('Y-m-d')
+        ) {
+
+            $mensaje = "<p class='mensaje-error'>La fecha de la cita no es válida</p>";
+
+        } elseif (
+            $motivo === '' ||
+            mb_strlen($motivo, 'UTF-8') > 500
+        ) {
+
+            $mensaje = "<p class='mensaje-error'>El motivo debe tener entre 1 y 500 caracteres</p>";
+
+        } else {
+
+            SQL::actualizarCitaAdmin($idCita, $idUser, $fecha, $motivo);
+
+            $mensaje = "<p class='mensaje-ok'>Cita actualizada correctamente</p>";
+            $idUsuarioSeleccionado = $idUser;
+        }
+
+    } catch (PDOException | RuntimeException $e) {
+
+        $mensaje = "<p class='mensaje-error'>Error al actualizar cita</p>";
     }
 }
+
 
 /* OBTENER USUARIOS */
 
