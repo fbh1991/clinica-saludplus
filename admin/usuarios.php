@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 
 // Sólo admin
@@ -15,6 +15,8 @@ require_once("../includes/SQL.php");
 $mensaje = "";
 
 // Crear usuario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { csrf_validate(); }
+
 if (isset($_POST['crear'])) {
 
     $nombre = trim($_POST['nombre']);
@@ -23,14 +25,16 @@ if (isset($_POST['crear'])) {
     $telefono = trim($_POST['telefono']);
     $fecha = $_POST['fecha'];
     $direccion = trim($_POST['direccion']);
-    $sexo = $_POST['sexo'];
+    $sexo = $_POST['sexo'] ?? 'No especificado';
+    if (!in_array($sexo, ['Hombre', 'Mujer', 'No especificado'], true)) { $sexo = 'No especificado'; }
 
     $usuario = trim($_POST['usuario']);
     $password = $_POST['password'];
-    $rol = $_POST['rol'];
+    $rol = $_POST['rol'] ?? 'user';
+    if (!in_array($rol, ['user', 'admin'], true)) { $rol = 'user'; }
 
-    if (strlen($password) < 6) {
-        $mensaje = "<div class='mensaje-error'>La contraseña debe tener al menos 6 caracteres</div>";
+    if (strlen($password) < 10) {
+        $mensaje = "<div class='mensaje-error'>La contraseña debe tener al menos 10 caracteres</div>";
     } else {
         try {
             if (SQL::existeUsuario($usuario)) {
@@ -58,9 +62,9 @@ if (isset($_POST['crear'])) {
 }
 
 // Eliminar usuario
-if (isset($_GET['eliminar'])) {
+if (isset($_POST['eliminar'])) {
 
-    $idUser = (int) $_GET['eliminar'];
+    $idUser = (int) $_POST['eliminar'];
 
     // Evitar borrarse a sí mismo (administrador)
     if ($idUser !== $_SESSION['idUser']) {
@@ -96,8 +100,10 @@ if (isset($_POST['editar'])) {
     $telefono = trim($_POST['telefono']);
     $fecha = $_POST['fecha'];
     $direccion = trim($_POST['direccion']);
-    $sexo = $_POST['sexo'];
-    $rol = $_POST['rol'];
+    $sexo = $_POST['sexo'] ?? 'No especificado';
+    if (!in_array($sexo, ['Hombre', 'Mujer', 'No especificado'], true)) { $sexo = 'No especificado'; }
+    $rol = $_POST['rol'] ?? 'user';
+    if (!in_array($rol, ['user', 'admin'], true)) { $rol = 'user'; }
 
     try {
 
@@ -142,6 +148,7 @@ $usuarios = SQL::obtenerUsuariosAdmin();
 
         <div class="usuarios-card">
             <form class="usuarios-form" method="POST">
+                    <?= csrf_field() ?>
                 <input type="text" name="nombre" placeholder="Nombre" required>
                 <input type="text" name="apellidos" placeholder="Apellidos" required>
                 <input type="email" name="email" placeholder="Email" required>
@@ -151,7 +158,7 @@ $usuarios = SQL::obtenerUsuariosAdmin();
                 <select name="sexo">
                     <option value="Hombre">Hombre</option>
                     <option value="Mujer">Mujer</option>
-                    <option value="Otro">Otro</option>
+                    <option value="No especificado">No especificado</option>
                 </select>
                 <input type="text" name="usuario" placeholder="Usuario" required>
                 <input type="password" name="password" placeholder="Contraseña" required>
@@ -180,6 +187,7 @@ $usuarios = SQL::obtenerUsuariosAdmin();
 
                 <!-- Formulario para editar/eliminar usuario -->
                 <form class="usuarios-form editar-form" method="POST">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="idUser" value="<?= $fila['idUser'] ?>">
                     <input type="text" name="nombre" value="<?= htmlspecialchars($fila['nombre']) ?>" required>
                     <input type="text" name="apellidos" value="<?= htmlspecialchars($fila['apellidos']) ?>" required>
@@ -190,7 +198,7 @@ $usuarios = SQL::obtenerUsuariosAdmin();
                     <select name="sexo">
                         <option value="Hombre" <?= $fila['sexo'] === "Hombre" ? "selected" : "" ?>>Hombre</option>
                         <option value="Mujer" <?= $fila['sexo'] === "Mujer" ? "selected" : "" ?>>Mujer</option>
-                        <option value="Otro" <?= $fila['sexo'] === "Otro" ? "selected" : "" ?>>Otro</option>
+                        <option value="No especificado" <?= $fila['sexo'] === "No especificado" ? "selected" : "" ?>>No especificado</option>
                     </select>
                     <select name="rol">
                         <option value="user" <?= $fila['rol'] === "user" ? "selected" : "" ?>>Usuario</option>
@@ -198,7 +206,11 @@ $usuarios = SQL::obtenerUsuariosAdmin();
                     </select>
                     <button class="usuarios-btn btn-actualizar" type="submit" name="editar">Actualizar usuario</button>
                 </form>
-                <a class="btn-eliminar" href="usuarios.php?eliminar=<?= $fila['idUser'] ?>">Eliminar usuario</a>
+                <form method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?')">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="eliminar" value="<?= (int) $fila['idUser'] ?>">
+                    <button class="btn-eliminar" type="submit">Eliminar usuario</button>
+                </form>
             </div>
 
         <?php endforeach; ?>

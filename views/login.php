@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 require_once("../includes/DB.php");
 require_once("../includes/SQL.php");
@@ -10,9 +10,11 @@ $error = "";
 
 // Procesar login
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    csrf_validate();
 
-    $usuario = trim($_POST['usuario']);
-    $password = $_POST['password'];
+    $usuario = trim((string) ($_POST['usuario'] ?? ''));
+    $password = (string) ($_POST['password'] ?? '');
+    if (strlen($usuario) > 40 || strlen($password) > 1024) { $usuario = ''; $password = ''; }
 
     try {
 
@@ -37,10 +39,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 header("Location: ../index.php");
                 exit();
             } else {
-                $error = "Contraseña incorrecta";
+                $error = "Usuario o contraseña incorrectos";
             }
         } else {
-            $error = "Usuario no encontrado";
+            $error = "Usuario o contraseña incorrectos";
         }
     } catch (PDOException $e) {
         $error = "Error en el sistema";
@@ -77,6 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <section class="container">
             <form method="POST">
+                    <?= csrf_field() ?>
                 <input type="text" name="usuario" placeholder="Usuario" required>
                 <input type="password" name="password" placeholder="Contraseña" required>
                 <button type="submit">Entrar</button>

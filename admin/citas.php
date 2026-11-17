@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 
 // Solo admin
@@ -15,15 +15,17 @@ require_once("../includes/SQL.php");
 $mensaje = "";
 
 /* USUARIO SELECCIONADO */
-$idUsuarioSeleccionado = isset($_GET['idUser']) ? (int)$_GET['idUser']: 0;
+$idUsuarioSeleccionado = isset($_GET['idUser']) ? (int) $_GET['idUser'] : (int) ($_POST['idUser'] ?? 0);
 /* CREAR CITA */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { csrf_validate(); }
+
 if (isset($_POST['crear'])) {
 
     $idUser = (int) $_POST['idUser'];
-    $fecha = $_POST['fecha'];
-    $motivo = trim($_POST['motivo']);
+    $fecha = (string) ($_POST['fecha'] ?? '');
+    $motivo = trim((string) ($_POST['motivo'] ?? ''));
 
-    if ($fecha >= date("Y-m-d")) {
+    if (valid_date($fecha) && $fecha >= date("Y-m-d") && $motivo !== '' && mb_strlen($motivo, 'UTF-8') <= 500) {
         try {
             SQL::crearCita($idUser, $fecha, $motivo);
             $mensaje = "<p class='mensaje-ok'>Cita creada correctamente</p>";
@@ -37,9 +39,9 @@ if (isset($_POST['crear'])) {
 }
 
 /* ELIMINAR CITA */
-if (isset($_GET['eliminar'])) {
+if (isset($_POST['eliminar'])) {
 
-    $idCita = (int) $_GET['eliminar'];
+    $idCita = (int) $_POST['eliminar'];
 
     try {
         SQL::eliminarCitaAdmin($idCita);
@@ -53,10 +55,10 @@ if (isset($_GET['eliminar'])) {
 if (isset($_POST['editar'])) {
 
     $idCita = (int) $_POST['idCita'];
-    $fecha = $_POST['fecha'];
-    $motivo = trim($_POST['motivo']);
+    $fecha = (string) ($_POST['fecha'] ?? '');
+    $motivo = trim((string) ($_POST['motivo'] ?? ''));
 
-    if ($fecha >= date("Y-m-d")) {
+    if (valid_date($fecha) && $fecha >= date("Y-m-d") && $motivo !== '' && mb_strlen($motivo, 'UTF-8') <= 500) {
         try {
             SQL::actualizarCitaAdmin($idCita, $fecha, $motivo);
             $mensaje = "<p class='mensaje-ok'>Cita actualizada correctamente</p>";
@@ -123,6 +125,7 @@ if ($idUsuarioSeleccionado > 0) {
         <h2>Nueva cita</h2>
         <div class="admin-card">
             <form class="admin-form" method="POST">
+                    <?= csrf_field() ?>
                 <input type="hidden" name="idUser" value="<?= $idUsuarioSeleccionado ?>">
                 <input type="date" name="fecha" required>
                 <input type="text" name="motivo" placeholder="Motivo de la cita" required>
@@ -149,12 +152,19 @@ if ($idUsuarioSeleccionado > 0) {
                         <?= htmlspecialchars($fila['motivo_cita']) ?>
                     </div>
                     <form class="admin-form" method="POST">
-                        <input type="hidden" name="idCita" value="<?= $fila['idCita'] ?>">
+                    <?= csrf_field() ?>
+                        <input type="hidden" name="idCita" value="<?= (int) $fila['idCita'] ?>">
+                        <input type="hidden" name="idUser" value="<?= (int) $idUsuarioSeleccionado ?>">
                         <input type="date" name="fecha" value="<?= htmlspecialchars($fila['fecha_cita']) ?>">
                         <input type="text" name="motivo" value="<?= htmlspecialchars($fila['motivo_cita']) ?>">
                         <button class="btn-actualizar" type="submit" name="editar">Actualizar</button>
                     </form>
-                    <a class="eliminar-btn" href="citas.php?idUser=<?= $idUsuarioSeleccionado ?>&eliminar=<?= $fila['idCita'] ?>">Eliminar cita</a>
+                    <form method="POST">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="idUser" value="<?= (int) $idUsuarioSeleccionado ?>">
+                        <input type="hidden" name="eliminar" value="<?= (int) $fila['idCita'] ?>">
+                        <button class="eliminar-btn" type="submit">Eliminar cita</button>
+                    </form>
                 </div>
 
             <?php endforeach; ?>

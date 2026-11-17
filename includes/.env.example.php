@@ -1,9 +1,7 @@
 <?php
-
-// PLANTILLA: copia este archivo como .env.php y configura tus valores locales.
-// No introduzcas credenciales reales en este archivo de ejemplo versionado.
+// Copia este archivo como .env.php y configura tus datos locales.
+// No subas .env.php a GitHub.
 $host = '127.0.0.1';
-$db   = 'clinical_fbh';
+$db = 'clinical_fbh';
 $user = 'root';
 $pass = '';
-

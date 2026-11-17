@@ -85,6 +85,15 @@ class SQL
             ':idUser' => $idUser
         ]);
     }
+    public static function obtenerHashPassword($idUser)
+    {
+        $conn = DB::conn();
+        $stmt = $conn->prepare("SELECT password FROM users_login WHERE idUser = :idUser LIMIT 1");
+        $stmt->execute([':idUser' => $idUser]);
+        $fila = $stmt->fetch();
+        return $fila ? $fila['password'] : null;
+    }
+
     public static function actualizarPassword($idUser, $password)
     {
 

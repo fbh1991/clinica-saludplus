@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once __DIR__ . "/../includes/security.php";
 require_once("../includes/config.php");
 
 // Sólo usuarios
@@ -20,13 +20,15 @@ $mensaje = "";
 
 // Crear cita
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { csrf_validate(); }
+
 if (isset($_POST['crear'])) {
 
-    $fecha = $_POST['fecha'];
-    $motivo = trim($_POST['motivo']);
+    $fecha = (string) ($_POST['fecha'] ?? '');
+    $motivo = trim((string) ($_POST['motivo'] ?? ''));
 
     // No permitir fechas pasadas
-    if ($fecha >= date("Y-m-d")) {
+    if (valid_date($fecha) && $fecha >= date("Y-m-d") && $motivo !== '' && mb_strlen($motivo, 'UTF-8') <= 500) {
 
         try {
             SQL::crearCita($idUser, $fecha, $motivo);
@@ -42,9 +44,9 @@ if (isset($_POST['crear'])) {
 
 // Eliminar cita
 
-if (isset($_GET['eliminar'])) {
+if (isset($_POST['eliminar'])) {
 
-    $idCita = (int) $_GET['eliminar'];
+    $idCita = (int) $_POST['eliminar'];
 
     SQL::eliminarCita($idCita, $idUser);
 
@@ -58,11 +60,11 @@ if (isset($_POST['editar'])) {
 
     $idCita = (int) $_POST['idCita'];
 
-    $fecha = $_POST['fecha'];
+    $fecha = (string) ($_POST['fecha'] ?? '');
 
-    $motivo = trim($_POST['motivo']);
+    $motivo = trim((string) ($_POST['motivo'] ?? ''));
 
-    if ($fecha >= date("Y-m-d")) {
+    if (valid_date($fecha) && $fecha >= date("Y-m-d") && $motivo !== '' && mb_strlen($motivo, 'UTF-8') <= 500) {
 
         SQL::actualizarCita($idCita, $idUser, $fecha, $motivo);
         header("Location: citaciones.php");
@@ -101,6 +103,7 @@ $citas = SQL::obtenerCitas($idUser);
             <h2>Nueva cita</h2>
             <div class="citas-card">
                 <form class="citas-form" method="POST">
+                    <?= csrf_field() ?>
                     <input type="date" name="fecha" required>
                     <input type="text" name="motivo" placeholder="Motivo de la cita" required>
                     <button class="citas-btn" type="submit" name="crear">Crear cita</button>
@@ -138,12 +141,17 @@ $citas = SQL::obtenerCitas($idUser);
                     <?php if ($fila['fecha_cita'] >= date("Y-m-d")): ?>
 
                         <form class="citas-form" method="POST">
+                    <?= csrf_field() ?>
                             <input type="hidden" name="idCita" value="<?= $fila['idCita'] ?>">
                             <input type="date" name="fecha" value="<?= htmlspecialchars($fila['fecha_cita']) ?>" required>
                             <input type="text" name="motivo" value="<?= htmlspecialchars($fila['motivo_cita']) ?>" required>
                             <button class="citas-btn btn-editar" type="submit" name="editar">Actualizar</button>
                         </form>
-                        <a class="btn-eliminar" href="citaciones.php?eliminar=<?= $fila['idCita'] ?>" onclick="return confirm('¿Seguro que deseas eliminar esta cita?')">Eliminar</a>
+                        <form method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta cita?')">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="eliminar" value="<?= (int) $fila['idCita'] ?>">
+                            <button class="btn-eliminar" type="submit">Eliminar</button>
+                        </form>
 
                     <?php else: ?>
 
