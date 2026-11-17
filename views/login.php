@@ -21,29 +21,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Buscar usuario
         $fila = SQL::obtenerLoginUsuario($usuario);
 
-        // Verificar si existe
-        if ($fila) {
+        
+// Verificar usuario, contraseña y rol
+if (
+    $fila &&
+    in_array($fila['rol'], ['user', 'admin'], true) &&
+    password_verify($password, $fila['password'])
+) {
+    // Regenerar el identificador de sesión
+    session_regenerate_id(true);
 
-            // Verificar contraseña
-            if (password_verify($password, $fila['password'])) {
+    // Renovar el token CSRF tras autenticar al usuario
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-                // Regenerar el identificador para reducir el riesgo de fijación de sesión.
-                session_regenerate_id(true);
+    // Crear sesión
+    $_SESSION['idUser'] = $fila['idUser'];
+    $_SESSION['usuario'] = $fila['usuario'];
+    $_SESSION['rol'] = $fila['rol'];
 
-                // Crear sesión
-                $_SESSION['idUser'] = $fila['idUser'];
-                $_SESSION['usuario'] = $fila['usuario'];
-                $_SESSION['rol'] = $fila['rol'];
+    // Redirigir al inicio
+    header("Location: ../index.php");
+    exit();
 
-                // Redirigir al inicio
-                header("Location: ../index.php");
-                exit();
-            } else {
-                $error = "Usuario o contraseña incorrectos";
-            }
-        } else {
-            $error = "Usuario o contraseña incorrectos";
-        }
+} else {
+    $error = "Usuario o contraseña incorrectos";
+}
+
     } catch (PDOException $e) {
         $error = "Error en el sistema";
     }
