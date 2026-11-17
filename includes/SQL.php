@@ -224,36 +224,44 @@ class SQL
 
         return $stmt->fetchAll();
     }
-    public static function eliminarCitaAdmin($idCita)
+    
+    public static function eliminarCitaAdmin($idCita, $idUser)
     {
-
         $conn = DB::conn();
 
         $sql = "DELETE FROM citas
-            WHERE idCita = :idCita";
+                WHERE idCita = :idCita
+                AND idUser = :idUser";
 
         $stmt = $conn->prepare($sql);
 
         return $stmt->execute([
-            ':idCita' => $idCita
+            ':idCita' => $idCita,
+            ':idUser' => $idUser
         ]);
     }
-    public static function actualizarCitaAdmin($idCita, $fecha, $motivo)
-    {
 
+    
+    public static function actualizarCitaAdmin($idCita, $idUser, $fecha, $motivo)
+    {
         $conn = DB::conn();
 
-        $sql = "UPDATE citas SET fecha_cita = :fecha, motivo_cita = :motivo
-            WHERE idCita = :idCita";
+        $sql = "UPDATE citas
+                SET fecha_cita = :fecha,
+                    motivo_cita = :motivo
+                WHERE idCita = :idCita
+                AND idUser = :idUser";
 
         $stmt = $conn->prepare($sql);
 
         return $stmt->execute([
             ':fecha' => $fecha,
             ':motivo' => $motivo,
-            ':idCita' => $idCita
+            ':idCita' => $idCita,
+            ':idUser' => $idUser
         ]);
     }
+
     public static function obtenerUsuarios()
     {
 
