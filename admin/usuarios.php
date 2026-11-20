@@ -35,12 +35,12 @@ if (isset($_POST['crear'])) {
     $errores = [];
 
     // Validar nombre y apellidos
-    if (!preg_match('/^[\p{L}\s]+$/u', $nombre)) {
-        $errores[] = 'El nombre solo puede contener letras y espacios';
+    if (!preg_match("/^[\p{L}\s'-’]+$/u", $nombre)) {
+        $errores[] = 'El nombre solo puede contener letras, espacios, guiones y apóstrofes';
     }
 
-    if (!preg_match('/^[\p{L}\s]+$/u', $apellidos)) {
-        $errores[] = 'Los apellidos solo pueden contener letras y espacios';
+    if (!preg_match("/^[\p{L}\s'-’]+$/u", $apellidos)) {
+        $errores[] = 'Los apellidos solo pueden contener letras, espacios, guiones y apóstrofes';
     }
 
     // Validar email
